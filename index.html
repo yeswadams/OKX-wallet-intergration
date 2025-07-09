@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>OKX Wallet Integration</title>
+
+  <!-- Tech Font & Icons -->
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap" rel="stylesheet">
+  <script src="https://kit.fontawesome.com/a81368914c.js" crossorigin="anonymous"></script>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Orbitron', sans-serif;
+      background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+      color: #ffffff;
+      padding: 0 1rem;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: auto;
+      padding: 3rem 1rem;
+    }
+
+    header {
+      text-align: center;
+      padding-bottom: 2rem;
+    }
+
+    header h1 {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+      color: #00ffe7;
+    }
+
+    header p {
+      font-size: 1.1rem;
+      color: #ccc;
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 20px;
+      padding: 2rem;
+      margin: 2rem 0;
+      backdrop-filter: blur(20px);
+      box-shadow: 0 0 20px rgba(0, 255, 231, 0.1);
+      transition: 0.3s;
+    }
+
+    .card:hover {
+      transform: scale(1.01);
+      box-shadow: 0 0 30px rgba(0, 255, 231, 0.3);
+    }
+
+    .features, .tech-stack {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      justify-content: center;
+    }
+
+    .feature, .tech {
+      flex: 1 1 200px;
+      padding: 1rem;
+      background-color: rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      text-align: center;
+    }
+
+    .feature i {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+      color: #00ffe7;
+    }
+
+    .wallet-section {
+      text-align: center;
+    }
+
+    .wallet-section button {
+      background-color: #00aaff;
+      color: #fff;
+      border: none;
+      padding: 1rem 2rem;
+      border-radius: 10px;
+      font-size: 1rem;
+      margin-top: 1rem;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .wallet-section button:hover {
+      background-color: #007acc;
+    }
+
+    .wallet-status, .account-display {
+      margin-top: 1rem;
+      padding: 0.8rem;
+      background-color: rgba(0, 0, 0, 0.2);
+      border-radius: 10px;
+    }
+
+    footer {
+      text-align: center;
+      padding: 2rem 0;
+      font-size: 0.9rem;
+      color: #aaa;
+    }
+
+    @media (max-width: 768px) {
+      .feature, .tech {
+        flex: 1 1 100%;
+      }
+
+      header h1 {
+        font-size: 2rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <header>
+      <h1>⚡ OKX Wallet Integration</h1>
+      <p>A sleek Web3 frontend experiment that connects to the OKX Wallet using Ethereum APIs.</p>
+    </header>
+
+    <!-- Features Section -->
+    <div class="card">
+      <h2 style="text-align:center; margin-bottom:1.5rem;">🚀 Features</h2>
+      <div class="features">
+        <div class="feature">
+          <i class="fas fa-plug"></i>
+          <h4>Connect Wallet</h4>
+          <p>Connect securely with your OKX Ethereum wallet.</p>
+        </div>
+        <div class="feature">
+          <i class="fas fa-id-badge"></i>
+          <h4>Account Detection</h4>
+          <p>Detect and display the connected account.</p>
+        </div>
+        <div class="feature">
+          <i class="fas fa-sync"></i>
+          <h4>Live Account Change</h4>
+          <p>Listen and update when account is changed.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tech Stack Section -->
+    <div class="card">
+      <h2 style="text-align:center; margin-bottom:1.5rem;">🛠️ Built With</h2>
+      <div class="tech-stack">
+        <div class="tech">HTML5</div>
+        <div class="tech">CSS3</div>
+        <div class="tech">JavaScript (ES6+)</div>
+        <div class="tech">Web3 Integration</div>
+        <div class="tech">OKX Wallet API</div>
+      </div>
+    </div>
+
+    <!-- Wallet Connection Section -->
+    <div class="card wallet-section">
+      <h2>🔐 Connect Your Wallet</h2>
+      <div class="wallet-status">Checking for OKX Wallet...</div>
+      <button class="connectEthereumButton">Connect to Ethereum</button>
+      <div class="account-display hidden"></div>
+    </div>
+  </div>
+
+  <footer>
+    &copy; 2025 Adams Yeswa · Built with 💙 and JavaScript
+  </footer>
+
+  <script>
+    const statusLabel = document.querySelector('.wallet-status');
+    const accountDisplay = document.querySelector('.account-display');
+    const connectButton = document.querySelector('.connectEthereumButton');
+
+    const truncate = (addr) => addr.slice(0, 6) + '...' + addr.slice(-4);
+
+    if (typeof window.okxwallet !== 'undefined') {
+      statusLabel.textContent = '✅ OKX Wallet is installed.';
+    } else {
+      statusLabel.textContent = '❌ OKX Wallet not found. Please install it to connect.';
+      statusLabel.style.color = 'red';
+      connectButton.disabled = true;
+      connectButton.style.opacity = 0.5;
+    }
+
+    connectButton.addEventListener('click', async () => {
+      try {
+        const accounts = await okxwallet.request({ method: 'eth_requestAccounts' });
+        accountDisplay.textContent = `👛 Connected: ${truncate(accounts[0])}`;
+        accountDisplay.classList.remove('hidden');
+      } catch (err) {
+        statusLabel.textContent = '❌ Error connecting wallet.';
+        console.error(err);
+      }
+    });
+
+    if (window.okxwallet) {
+      okxwallet.on('accountsChanged', (accounts) => {
+        accountDisplay.textContent = `👛 Switched: ${truncate(accounts[0])}`;
+      });
+    }
+    
+    // Request Chain ID
+    const chainId = await window.ethereum.request({ method: 'eth_chainId'});
+    okxwallet.on('chainChanged', handleChainChanged);
+
+    function handleChainChanged(chainId) {
+        // its recommended to reload the page when the chain changes
+        window.location.reload();
+    }
+    
+  </script>
+
+</body>
+</html>
